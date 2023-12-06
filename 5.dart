@@ -1,7 +1,7 @@
 import 'dart:io';
 
 class Range implements Comparable<Range> {
-  Range(int this.start, int this.end, int this.conversion) : length = start-end +1 {}
+  Range(int this.start, int this.end, int this.conversion) : length = end-start +1 {}
   int start;
   int end;
   int conversion;
