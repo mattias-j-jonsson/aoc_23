@@ -10,24 +10,22 @@
 import 'dart:io';
 
 class Node {
-  Node(this.value, this.direction);
+  Node(this.value, this.direction, {this.isRow = false});
   
   int value;
   String direction;
+  bool isRow;
   
   @override
   String toString() {
-    return value.toString();
-    // if(direction != null)
-    //   return direction!;
-    // else
-    //   return 'null';
+    // return value.toString();
+    return direction;
   }
 }
 
 
 void main(List<String> args) {
-  var file = File('inputs/10_test_4');
+  var file = File('inputs/10_input');
   List<String> input = file.readAsLinesSync();
   
   int loopLength = calculate(input);
@@ -110,7 +108,7 @@ int calculatePart2(List<String> input) {
   } else if (sCol > 0 && isLegalSymbol(input[sRow][sCol-1], 'W')) {
     direction = 'W';
   } else {
-    return -1;
+    return -1;  
   }
   
   // Part 2 shenagigans
@@ -145,34 +143,42 @@ int calculatePart2(List<String> input) {
   }
 
   print('');
-
-  for (var row in tileStatus) {
-    bool foundTwo = false;
-    int index = 0;
-    String currentDirection = '';
-    for (var i = 0; i < rowMAX; i++) {
-      if(row[i].value == 2) {
-        if(!foundTwo) {
-          index = i;
-          foundTwo = true;
-          currentDirection = row[i].direction;
-        }
-        if ((i-index) > 1) {
-          row.fillRange(index + 1, i, Node(1, 'null'));
-          index = i;
-          // foundTwo = false;
-        } else {
-          index = i;  
+  int insideTiles = 0;
+  for (var i = 0; i < input.length; i++) {
+    int foundWall = 0;
+    String firstInWall = '';
+    for (var j = 0; j < rowMAX; j++) {
+      if(tileStatus[i][j].value == 2) {
+        if (input[i][j] == '|') {
+          foundWall++;
+        } else if (input[i][j] == 'F') {
+          firstInWall = 'F';
+        } else if (input[i][j] == 'L') {
+          firstInWall = 'L';
+        } else if (input[i][j] == 'J') {
+          if(firstInWall == 'F'){
+            foundWall++;
+            firstInWall = '';
+          }
+        } else if (input[i][j] == '7')
+          if(firstInWall == 'L') {
+            foundWall++;
+            firstInWall = '';
+          }
+      } else {
+        if(foundWall % 2 == 1) {
+          insideTiles++;
         }
       }
     }
   }
 
+  print('insideTiles: $insideTiles');
 
-  for (var element in tileStatus) {
-    print(element);
-    print('');
-  }
+  // for (var element in tileStatus) {
+  //   print(element);
+  //   print('');
+  // }
 
   int ones = 0;
 
@@ -185,26 +191,6 @@ int calculatePart2(List<String> input) {
   return 0;
 }
 
-String insideDirection(String startDir, String currentDir) {
-  int a = 1;
-  String insideDir = '';
-
-  switch (a) {
-    case 1:
-      insideDir = 'N';
-      break;
-    case 2:
-      insideDir = 'E';
-      break;
-    case 3:
-      insideDir = 'S';
-      break;
-    case 4:
-      insideDir = 'W';
-      break;
-    default:
-  }
-}
 
 /* 
   -
