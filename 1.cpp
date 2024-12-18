@@ -1,75 +1,55 @@
-#include <string>
 #include <fstream>
 #include <iostream>
-
-int get_line_value(std::string input_line) {
-    int first_number;
-    int last_number;
-    int temp;
-    bool first_found = false;
-    
-    for (int i = 0; i < input_line.size(); i++)
-    {
-        temp = (int) input_line[i];
-        if(temp >= 48 && temp <= 57) {
-            temp %= 48;
-            if(!first_found){
-                first_number = temp;
-                last_number = temp;
-                first_found = true;
-            } else {
-                last_number = temp;
-            }
-        }
-    }
-    return 10*first_number + last_number;
-}
-
-int get_line_value_letters(std::string input_line) {
-    int first_pos = input_line.size(), last_pos = -1, first_number, last_number;
-    int temp_pos;
-
-    std::string numbers[20] = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-
-    for(int i = 0; i < 20; i++) {
-        temp_pos = input_line.find(numbers[i]);
-        while (temp_pos != std::string::npos) 
-        {
-            if(temp_pos < first_pos) {
-                first_pos = temp_pos;
-                first_number = i % 10;
-            }
-            if(temp_pos > last_pos) {
-                last_pos = temp_pos;
-                last_number = i % 10;
-            }
-            temp_pos = input_line.find(numbers[i], temp_pos+1);
-        }
-        
-    }
-
-    return 10*first_number + last_number;
-}
+#include <vector>
+#include <algorithm>
+#include <cmath>
 
 int main(int argc, char const *argv[])
 {
-    const std::string filename = "inputs/1_input";
     std::fstream input_stream;
-    std::string input_string;
-    int acc_values = 0;
-    int temp;
+    input_stream.open("inputs/1.in", std::ios::in);
 
-    input_stream.open(filename, std::ios::in);
-    while (input_stream.eof() == false) 
+    std::vector<int> left, right;
+
+    std::string temp;
+    while (input_stream >> temp)
     {
-        input_stream >> input_string;
-        temp = get_line_value_letters(input_string);
-        acc_values += temp;
+        left.push_back(std::stoi(temp));
+        input_stream >> temp;
+        right.push_back(std::stoi(temp));
     }
-    acc_values -= temp;
 
-    std::cout << "acc_values: " << acc_values << std::endl;
-    // std:: cout << get_line_value_letters("1jdrpjpvkmmseven") << std::endl;
+    std::sort(left.begin(), left.end());
+    std::sort(right.begin(), right.end());
+
+    int result = 0;
+    for (unsigned int i = 0; i < left.size(); i++)
+    {
+        result += std::abs(right[i] - left[i]);
+    }
+    
+    std::cout << "result part 1: " << result << "\n";
+
+    unsigned int i = 0, j = 0;
+    result = 0;
+    while (i < left.size() && j < right.size())
+    {
+        if (left[i] < right[j])
+        {
+            i++;
+            j = 0;
+        } else if (left[i] > right[j])
+        {
+            j++;
+        } else
+        {
+            result += left[i];
+            j++;
+        }
+    }
+
+    std::cout << "result part 2: " << result << "\n";
+
 
     return 0;
 }
